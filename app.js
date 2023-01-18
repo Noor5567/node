@@ -45,7 +45,7 @@ connection.connect(function (err) {
  })
 })*/
 //let id = 4;
-
+/*
 let id = process.argv[2]
 let query = `select * from node where id=` + id;
 connection.query(query, (error, results, fields) => {
@@ -54,9 +54,16 @@ connection.query(query, (error, results, fields) => {
     }
     console.log(results);
 })
-connection.end();
+connection.end();*/
 /*
 let insertQuery = `insert into node(name,password) values('ibrahim','5567')`;
 connection.query(insertQuery);
 connection.end();
 */
+var fs = require('fs');
+
+// json file with the data
+var data = fs.readFileSync('sample.json');
+var elements = JSON.parse(data);
+console.log(elements.Hydrogen.appearance);
+
