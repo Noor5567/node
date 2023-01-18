@@ -28,6 +28,7 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`Example app listening on port http://localhost:${port}`)
 })
+/*
 connection.connect(function (err) {
     if (err) {
         return console.error('error: ' + err.message);
@@ -41,12 +42,21 @@ connection.connect(function (err) {
         if (err) {
             console.log(err.message);
         }
-    })
-    connection.end(function (err) {
-        if (err) {
-            return console.log(err.message);
-        }
-    });
+ })
+})*/
+//let id = 4;
 
+let id = process.argv[2]
+let query = `select * from node where id=` + id;
+connection.query(query, (error, results, fields) => {
+    if (error) {
+        return console.error(error.message);
+    }
+    console.log(results);
 })
-
+connection.end();
+/*
+let insertQuery = `insert into node(name,password) values('ibrahim','5567')`;
+connection.query(insertQuery);
+connection.end();
+*/
