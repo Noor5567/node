@@ -1,7 +1,12 @@
-var mysql = require('mysql')
-// Let’s make node/socketio listen on port 3000
-var io = require('socket.io').listen(3000)
-// Define our db creds
+
+/*
+const express = require('express')
+const app = express()
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+const port = 3000
+let mysql = require('mysql');
+const { Socket } = require('socket.io');
 let connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -9,52 +14,42 @@ let connection = mysql.createConnection({
     database: 'demo'
 });
 
-// Log any errors connected to the db
-db.connect(function (err) {
-    if (err) console.log(err)
-})
+let count = 0;
 
-// Define/initialize our global vars
-var notes = []
-var isInitNotes = false
-var socketCount = 0
+io.on('connection', (socket) => {
 
-io.sockets.on('connection', function (socket) {
-    // Socket has connected, increase socket count
-    socketCount++
-    // Let all sockets know how many are connected
-    io.sockets.emit('users connected', socketCount)
-
+    let sql = `insert into node (name) value('noor')`;
+    connection.query(sql);
+    count++;
+    console.log(count);
     socket.on('disconnect', function () {
-        // Decrease the socket count on a disconnect, emit
-        socketCount--
-        io.sockets.emit('users connected', socketCount)
-    })
-
-    socket.on('new note', function (data) {
-        // New note added, push to all sockets and insert into db
-        notes.push(data)
-        io.sockets.emit('new note', data)
-        // Use node's db injection format to filter incoming data
-        db.query('INSERT INTO node (name) VALUES (?)', data.note)
-    })
-
-    // Check to see if initial query/notes are set
-    if (!isInitNotes) {
-        // Initial app start, run db query
-        db.query('SELECT * FROM node')
-            .on('result', function (data) {
-                // Push results onto the notes array
-                notes.push(data)
-            })
-            .on('end', function () {
-                // Only emit notes after query has been completed
-                socket.emit('initial notes', notes)
-            })
-
-        isInitNotes = true
-    } else {
-        // Initial notes already exist, send out
-        socket.emit('initial notes', notes)
-    }
+        console.log('user disconnected');
+    });
 })
+server.listen(port, function () {
+    console.log(`Listening on port http://localhost:${port}`);
+});
+
+*/
+var mysql = require("mysql");
+var io = require("socket.io")();
+
+var connection = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "demo"
+});
+
+connection.connect();
+
+io.on("connection", function (socket) {
+    connection.query(`insert into node(name) value('noor')`, function (error, results, fields) {
+        console.log(results)
+        if (error) throw error;
+        socket.emit("data", results);
+    });
+});
+
+
+io.listen(3000);
