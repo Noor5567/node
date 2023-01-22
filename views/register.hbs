@@ -1,0 +1,19 @@
+<html>
+
+<body>
+    <form action="/auth/register" method="POST">
+        <label>EMAIL:</label>
+        <input type="text" name="email" id="email">
+        <label>Name:</label>
+        <input type="text" name="name" id="name">
+        <label>Password:</label>
+        <input type="password" name="password" id="password">
+        <label>confirmPassword:</label>
+        <input type="password" name="confirmPassword" id="confirmPassword">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        {{#if message}} <h4 class="alert alert-danger mt-4">{{message}}</h4>
+        {{/if}}
+    </form>
+</body>
+
+</html>
