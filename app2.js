@@ -11,9 +11,9 @@ app.use(express.static(publicDir))
 const bcrypt = require("bcryptjs");
 const e = require('express');
 app.use(session({
-    secret: 'secret',
-    resave: true,
-    saveUninitialized: true
+    secret: "noor",
+    saveUninitialized: true,
+    resave: true
 }));
 app.use(express.urlencoded({ extended: 'false' }))
 app.use(express.json())
@@ -31,7 +31,23 @@ db.connect((error) => {
     }
 })
 app.get("/", (req, res) => {
-    res.render("index")
+    if (req.session.view) {
+
+        // The next time when user visits,
+        // he is recognized by the cookie
+        // and variable gets updated.
+        req.session.view++;
+        res.send("You visited this page for "
+            + req.session.view + " times");
+    }
+    else {
+
+        // If user visits the site for
+        // first time
+        req.session.view = 1;
+        res.send("You have visited this page"
+            + " for first time ! Welcome....");
+    }
 })
 app.get("/register", (req, res) => {
     res.render("register")
@@ -50,8 +66,8 @@ app.post("/auth/register", (req, res) => {
                 message: "email already register"
             })
         } else {
-            //let hashedPassword = await bcrypt.hash(password, 8)
-            db.query(`insert into node set ?`, { name: name, email: email, password: password }, (error, result) => {
+            let hashedPassword = await bcrypt.hash(password, 8)
+            db.query(`insert into node set ?`, { name: name, email: email, password: hashedPassword }, (error, result) => {
                 if (error) {
                     console.log(error)
                 }
@@ -69,22 +85,16 @@ app.post("/auth/register", (req, res) => {
 app.post("/auth/login", (req, res) => {
     let email = req.body.email
     let password = req.body.password
-    //let hashedPassword = bcrypt.hash(password, 8)
-    let sql = db.query(`select * from node where email =?`, [email, password], (error, result, field) => {
-        /*
-        if (error) throw error;
-        if (result.lengh > 0) {
-            res.session.loggedin = true;
-            res.session.email = email;
-            res.render('/home'), {
-                message: res.session.email = email
-            }
-        } else {
-            res.send('Incorrect Username and/or Password!');
+    let hashedPassword = bcrypt.hash(password, 8)
+    db.query(`select * from node where email=? and password=?`, [email, password], (error, result) => {
+        if (error) {
+            console.log(error)
         }
-        res.end();
-        */
-        return res.json(result);
+        if (result.length > 0) {
+            res.render("home"), {
+                message: res.json(result)
+            }
+        }
     })
 })
 app.listen(5000, () => {
